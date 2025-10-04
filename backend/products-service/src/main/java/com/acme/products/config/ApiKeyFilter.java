@@ -24,11 +24,11 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     throws ServletException, IOException {
         String key = request.getHeader("X-API-KEY");
         if (key == null || !key.equals(expected)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/vnd.api+json");
-            response.getWriter().write("{\"errors\":[{\"status\":\"401\",\"title\":\"Unauthorized\",\"detail\":\"Missing or invalid API key\"}]} ");
-            return;
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/vnd.api+json");
+        response.getWriter().write("{\"errors\":[{\"status\":\"401\",\"title\":\"Unauthorized\",\"detail\":\"Missing or invalid API key\"}]} ");
+        return;
         }
         filterChain.doFilter(request, response);
     }
-}   
+}
