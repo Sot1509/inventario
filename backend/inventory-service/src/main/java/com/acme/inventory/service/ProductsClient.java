@@ -1,6 +1,7 @@
 package com.acme.inventory.service;
 
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,7 +15,8 @@ import java.util.UUID;
 @Component
 public class ProductsClient {
     private final WebClient client;
-    public ProductsClient(WebClient productsClient){ this.client = productsClient; }
+    
+    public ProductsClient(@Qualifier("productsWebClient")WebClient productsClient){ this.client = productsClient; }
 
 
     public Mono<Boolean> exists(UUID productId){

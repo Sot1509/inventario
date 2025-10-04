@@ -10,9 +10,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-    @Bean
+    @Bean(name = "productsWebClient")
     WebClient productsClient(@Value("${app.products-base-url}") String baseUrl,
-    @Value("${app.api-key}") String apiKey){
+                             @Value("${app.api-key}") String apiKey){
         return WebClient.builder()
         .baseUrl(baseUrl)
         .defaultHeader("X-API-KEY", apiKey)
