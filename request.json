@@ -1,0 +1,11 @@
+﻿{
+  "data": {
+    "type": "products",
+    "attributes": {
+      "sku": "SKU-001",
+      "name": "Teclado",
+      "description": "Teclado mecánico",
+      "price": 59.90
+    }
+  }
+}
