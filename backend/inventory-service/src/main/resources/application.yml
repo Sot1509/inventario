@@ -27,3 +27,20 @@ app:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+resilience4j:
+  retry:
+    instances:
+      products:
+        maxAttempts: 3
+        waitDuration: 100ms
+  circuitbreaker:
+    instances:
+      products:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+  timelimiter:
+    instances:
+      products:
+        timeoutDuration: 2s
