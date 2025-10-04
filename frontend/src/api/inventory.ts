@@ -1,20 +1,13 @@
-import { http } from './http'
-import axios from 'axios'
+import { inventoryApi } from "./http";
 
-export async function getQuantity(productId: string) {
-  try {
-    const { data } = await http.get(`/inventories/${productId}`)
-    return data?.data?.attributes?.quantity as number
-  } catch (err) {
-    if (axios.isAxiosError(err) && err.response?.status === 404) {
-      // inventario no inicializado → mostrar 0 en UI
-      return 0
-    }
-    throw err
-  }
+export async function getInventory(productId: string) {
+  const res = await inventoryApi.get(`/inventories/${productId}`);
+  return res.data;
 }
 
-export async function decrement(productId: string, by = 1) {
-  const { data } = await http.post(`/inventories/${productId}/decrement?by=${by}`, {})
-  return data?.data?.attributes?.quantity as number
+export async function decrementInventory(productId: string, by = 1) {
+  const res = await inventoryApi.post(`/inventories/${productId}/decrement`, null, {
+    params: { by },
+  });
+  return res.data;
 }
