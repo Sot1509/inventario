@@ -4,47 +4,63 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpMethod;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
 
-@Component
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-  @Value("${app.api-key:secret123}")
-  private String apiKey;
+  private final String expectedApiKey;
+  private final AntPathMatcher matcher = new AntPathMatcher();
 
-  private static final Set<String> WHITELIST_PREFIXES = Set.of(
-      "/swagger-ui.html", "/swagger-ui/",
-      "/v3/api-docs",
+  // Rutas públicas que NO requieren API key
+  private static final String[] PUBLIC_PATHS = new String[] {
+      "/v3/api-docs/**",
+      "/swagger-ui.html",
+      "/swagger-ui/**",
       "/actuator/health"
-  );
+  };
 
-  private boolean isWhitelisted(String uri) {
-    return WHITELIST_PREFIXES.stream().anyMatch(uri::startsWith);
+  public ApiKeyFilter(String expectedApiKey) {
+    this.expectedApiKey = expectedApiKey;
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-      throws ServletException, IOException {
-
-    String uri = req.getRequestURI();
-    if (isWhitelisted(uri)) {
-      chain.doFilter(req, res);
+  protected void doFilterInternal(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  FilterChain filterChain) throws ServletException, IOException {
+    // Siempre dejar pasar preflight CORS
+    if (HttpMethod.OPTIONS.matches(request.getMethod())) {
+      filterChain.doFilter(request, response);
       return;
     }
 
-    String header = req.getHeader("X-API-KEY");
-    if (header == null || !header.equals(apiKey)) {
-      res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      res.setContentType("application/vnd.api+json");
-      res.getWriter().write("{\"errors\":[{\"status\":\"401\",\"title\":\"Unauthorized\",\"detail\":\"Missing or invalid API key\"}]}");
+    // Whitelist explícito: si la ruta es pública, continuar sin validar
+    String path = request.getRequestURI();
+    for (String p : PUBLIC_PATHS) {
+      if (matcher.match(p, path)) {
+        filterChain.doFilter(request, response);
+        return;
+      }
+    }
+
+    // Validar API key en el resto
+    String apiKey = request.getHeader("X-API-KEY");
+    if (apiKey == null || !apiKey.equals(expectedApiKey)) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setContentType("application/vnd.api+json");
+      String body = """
+        {"errors":[{"status":"401","title":"Unauthorized","detail":"Missing or invalid API key"}]}
+        """;
+      byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+      response.setContentLength(bytes.length);
+      response.getOutputStream().write(bytes);
       return;
     }
 
-    chain.doFilter(req, res);
+    filterChain.doFilter(request, response);
   }
 }
