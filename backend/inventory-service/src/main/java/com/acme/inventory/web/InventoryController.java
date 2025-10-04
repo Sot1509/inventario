@@ -3,7 +3,7 @@ package com.acme.inventory.web;
 import com.acme.inventory.domain.Inventory;
 import com.acme.inventory.jsonapi.JsonApi;
 import com.acme.inventory.service.InventoryService;
-import com.acme.inventory.service.ProductsClient;
+import com.acme.inventory.service.ProductsGateway;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,9 +13,9 @@ import java.util.UUID;
 @RequestMapping(value = "/inventories", produces = "application/vnd.api+json")
 public class InventoryController {
     private final InventoryService service;
-    private final ProductsClient products;
+    private final ProductsGateway products;
 
-    public InventoryController(InventoryService service, ProductsClient products){
+    public InventoryController(InventoryService service, ProductsGateway products){
         this.service = service;
         this.products = products;
     }
@@ -43,7 +43,7 @@ public class InventoryController {
             @RequestParam(defaultValue = "1") int by) {
 
         // valida que el producto exista en products-service
-        boolean ok = products.exists(productId).blockOptional().orElse(false);
+        boolean ok = products.exists(productId).join();
         if (!ok) throw new NotFoundException("Product " + productId + " not found in products-service");
 
         Inventory inv = service.setIfAbsent(productId, 0);
