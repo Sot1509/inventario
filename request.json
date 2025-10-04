@@ -2,10 +2,10 @@
   "data": {
     "type": "products",
     "attributes": {
-      "sku": "SKU-001",
-      "name": "Teclado",
-      "description": "Teclado mecánico",
-      "price": 59.90
+      "sku": "SKU-101",
+      "name": "Auriculares",
+      "description": "BT",
+      "price": 149.90
     }
   }
 }
