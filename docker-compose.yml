@@ -10,12 +10,13 @@ services:
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pclsMYSQL_ROOT_PASSWORD"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 10
     volumes:
       - dbdata:/var/lib/mysql
+    restart: unless-stopped
 
   products-service:
     build: ./backend/products-service
@@ -24,10 +25,10 @@ services:
       SPRING_DATASOURCE_USERNAME: shop
       SPRING_DATASOURCE_PASSWORD: shop
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
     ports:
       - "8081:8080"
+    restart: unless-stopped
 
   inventory-service:
     build: ./backend/inventory-service
@@ -36,13 +37,12 @@ services:
       SPRING_DATASOURCE_USERNAME: shop
       SPRING_DATASOURCE_PASSWORD: shop
       APP_PRODUCTS_BASE_URL: http://products-service:8080
-    depend_on:
-      mysql:
-        condition: service_healthy
-      products-service:
-        condition: service_started
+    depends_on:
+      - mysql
+      - products-service
     ports:
       - "8082:8080"
+    restart: unless-stopped
 
 volumes:
   dbdata:
