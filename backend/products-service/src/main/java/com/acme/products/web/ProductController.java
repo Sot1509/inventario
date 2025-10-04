@@ -5,6 +5,9 @@ import com.acme.products.jsonapi.JsonApi;
 import com.acme.products.service.ProductService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaType;
+
 
 import java.util.*;
 
@@ -74,8 +77,8 @@ public class ProductController {
         return new JsonApi.OneResponse<Map<String, Object>>(res);
     }
 
-    @PostMapping(consumes = "application/vnd.api+json")
-    public JsonApi.OneResponse<Map<String, Object>> create(@RequestBody Map<String, Object> payload) {
+        @PostMapping(consumes = { "application/vnd.api+json", MediaType.APPLICATION_JSON_VALUE })
+        public JsonApi.OneResponse<Map<String,Object>> create(@RequestBody Map<String,Object> payload) { 
         // payload JSON:API: { data: { type, attributes: { ... } } }
         var data = (Map<String, Object>) payload.get("data");
         var attrs = (Map<String, Object>) data.get("attributes");
@@ -103,7 +106,7 @@ public class ProductController {
         return new JsonApi.OneResponse<Map<String, Object>>(res);
     }
 
-    @PatchMapping(value = "/{id}", consumes = "application/vnd.api+json")
+    @PatchMapping(value = "/{id}", consumes = { "application/vnd.api+json", MediaType.APPLICATION_JSON_VALUE })
     public JsonApi.OneResponse<Map<String, Object>> update(@PathVariable UUID id,
                                                            @RequestBody Map<String, Object> payload) {
         var data = (Map<String, Object>) payload.get("data");
