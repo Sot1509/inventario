@@ -1,6 +1,6 @@
-@"
-server:
+﻿server:
   port: 8080
+  address: 0.0.0.0
 
 spring:
   datasource:
@@ -27,4 +27,3 @@ app:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-"@ | Set-Content .\backend\inventory-service\src\main\resources\application.yml

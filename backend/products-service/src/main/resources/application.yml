@@ -1,6 +1,6 @@
-@"
-server:
+﻿server:
   port: 8080
+  address: 0.0.0.0
 
 spring:
   datasource:
@@ -23,12 +23,9 @@ management:
       exposure:
         include: health,info
 
-# API Key para requests entrantes (simples)
 app:
   api-key: secret123
 
-# Swagger
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-"@ | Set-Content .\backend\products-service\src\main\resources\application.yml
