@@ -212,5 +212,24 @@ docs(readme): guía completa de instalación, uso y decisiones
 
 ---
 
+## 10) Publicar el repo (GitHub)
+
+```powershell
+# desde la raíz
+git remote add origin https://github.com/sot1509/inventario.git
+git branch -M main
+git push -u origin main
+```
+
+**Tag sugerido (cuando todo esté listo):**
+
+```powershell
+git tag -a v1.0.0 -m "release: backend + frontend funcional"
+git push origin v1.0.0
+```
+
+---
+
+
 
 **Fin** 
